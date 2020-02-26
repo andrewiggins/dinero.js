@@ -1,12 +1,11 @@
 import Calculator from './calculator'
 import { isUndefined } from './helpers'
 
+const formatParser = /^(?:(\$|USD)?0(?:(,)0)?(\.)?(0+)?|0(?:(,)0)?(\.)?(0+)?\s?(dollar)?)$/
 const calculator = Calculator()
 
 export default function Format(format) {
-  const matches = /^(?:(\$|USD)?0(?:(,)0)?(\.)?(0+)?|0(?:(,)0)?(\.)?(0+)?\s?(dollar)?)$/gm.exec(
-    format
-  )
+  const matches = format.match(formatParser)
 
   return {
     /**
