@@ -59,9 +59,7 @@ export default function Format(format) {
      * @return {String}
      */
     getStyle() {
-      return !isUndefined(this.getCurrencyDisplay(this.getMatches()))
-        ? 'currency'
-        : 'decimal'
+      return !isUndefined(this.getCurrencyDisplay()) ? 'currency' : 'decimal'
     },
     /**
      * Returns whether grouping should be used or not.
