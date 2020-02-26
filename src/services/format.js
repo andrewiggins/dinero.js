@@ -4,8 +4,39 @@ import { isUndefined } from './helpers'
 const formatParser = /^(?:(\$|USD)?0(?:(,)0)?(\.)?(0+)?|0(?:(,)0)?(\.)?(0+)?\s?(dollar)?)$/
 const calculator = Calculator()
 
+const currencyModes = {
+  USD: 'code',
+  dollar: 'name',
+  $: 'symbol'
+}
+
 export default function Format(format) {
+  const filteredMatches = []
+  let currencyDisplay
+  let useGrouping = false
+  let minFractionDigits = 0
+
   const matches = format.match(formatParser)
+  if (matches != null) {
+    for (let i = 1; i < matches.length; i++) {
+      const match = matches[i]
+      if (isUndefined(match)) {
+        continue
+      }
+
+      filteredMatches.push(match)
+      if (match === ',') {
+        useGrouping = true
+      } else if (match === '.') {
+        minFractionDigits = matches[calculator.add(i, 1)].length
+      } else if (
+        currencyDisplay == null &&
+        (match === 'USD' || match === 'dollar' || match === '$')
+      ) {
+        currencyDisplay = currencyModes[match]
+      }
+    }
+  }
 
   return {
     /**
@@ -15,9 +46,7 @@ export default function Format(format) {
      * @return {Array}
      */
     getMatches() {
-      return matches !== null
-        ? matches.slice(1).filter(match => !isUndefined(match))
-        : []
+      return filteredMatches
     },
     /**
      * Returns the amount of fraction digits to display.
@@ -26,12 +55,7 @@ export default function Format(format) {
      * @return {Number}
      */
     getMinimumFractionDigits() {
-      const decimalPosition = match => match === '.'
-      return !isUndefined(this.getMatches().find(decimalPosition))
-        ? this.getMatches()[
-            calculator.add(this.getMatches().findIndex(decimalPosition), 1)
-          ].split('').length
-        : 0
+      return minFractionDigits
     },
     /**
      * Returns the currency display mode.
@@ -40,16 +64,7 @@ export default function Format(format) {
      * @return {String}
      */
     getCurrencyDisplay() {
-      const modes = {
-        USD: 'code',
-        dollar: 'name',
-        $: 'symbol'
-      }
-      return modes[
-        this.getMatches().find(match => {
-          return match === 'USD' || match === 'dollar' || match === '$'
-        })
-      ]
+      return currencyDisplay
     },
     /**
      * Returns the formatting style.
@@ -67,7 +82,7 @@ export default function Format(format) {
      * @return {Boolean}
      */
     getUseGrouping() {
-      return !isUndefined(this.getMatches().find(match => match === ','))
+      return useGrouping
     }
   }
 }
