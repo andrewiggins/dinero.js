@@ -1,0 +1,2 @@
+- Figure out better way to run locally
+  - local file dep required running `npm install` with `--no-install-links` and adding `main/module` entries to root package.json

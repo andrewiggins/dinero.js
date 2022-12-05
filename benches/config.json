@@ -1,0 +1,49 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Polymer/tachometer/master/config.schema.json",
+  "timeout": 0,
+  "benchmarks": [
+    {
+      "name": "add.html",
+      "url": "add.html",
+      "measurement": [
+        {
+          "name": "runtime",
+          "mode": "performance",
+          "entryName": "runtime"
+        }
+      ],
+      "browser": {
+        "name": "chrome",
+        "headless": true,
+        "addArguments": [
+          "--js-flags=--expose-gc",
+          "--enable-precise-memory-info"
+        ]
+      },
+      "expand": [
+        {
+          "packageVersions": {
+            "label": "dinerno-v2",
+            "dependencies": {
+              "dinero.js": "v2.0.0-alpha.11",
+              "@dinero.js/calculator-number": "v2.0.0-alpha.11",
+              "@dinero.js/core": "v2.0.0-alpha.11",
+              "@dinero.js/currencies": "v2.0.0-alpha.11"
+            }
+          }
+        },
+        {
+          "packageVersions": {
+            "label": "dinerno-local",
+            "dependencies": {
+              "dinero.js": "file:/Users/andre_wiggins/github/andrewiggins/dinero.js/packages/dinero.js",
+              "@dinero.js/calculator-number": "file:/Users/andre_wiggins/github/andrewiggins/dinero.js/packages/calculator-number",
+              "@dinero.js/core": "file:/Users/andre_wiggins/github/andrewiggins/dinero.js/packages/core",
+              "@dinero.js/currencies": "file:/Users/andre_wiggins/github/andrewiggins/dinero.js/packages/currencies"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

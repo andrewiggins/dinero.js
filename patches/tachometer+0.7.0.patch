@@ -1,0 +1,145 @@
+diff --git a/node_modules/tachometer/lib/browser.js b/node_modules/tachometer/lib/browser.js
+index 320b250..2602bb0 100644
+--- a/node_modules/tachometer/lib/browser.js
++++ b/node_modules/tachometer/lib/browser.js
+@@ -3,6 +3,11 @@
+  * Copyright 2019 Google LLC
+  * SPDX-License-Identifier: BSD-3-Clause
+  */
++import * as os from "os";
++import * as fs from "fs";
++import * as path from "path";
++import * as crypto from "crypto";
++import * as url from "url";
+ import * as webdriver from 'selenium-webdriver';
+ import * as chrome from 'selenium-webdriver/chrome.js';
+ import * as edge from 'selenium-webdriver/edge.js';
+@@ -165,7 +170,17 @@ function chromeOpts(config) {
+     opts.addArguments(`--window-size=${width},${height}`);
+     if (config.profile) {
+         opts.addArguments(`user-data-dir=${config.profile}`);
++    } else {
++      // opts.addArguments(`user-data-dir=${fs.mkdtempSync(path.join(os.tmpdir(), 'tachometer'))}`)
+     }
++
++    // const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
++    // const selfSignedCert = path.join(__dirname, 'localhost-cert.pem');
++    // const fingerprint = new crypto.X509Certificate(fs.readFileSync(selfSignedCert)).fingerprint256;
++    // https://peter.sh/experiments/chromium-command-line-switches/#ignore-certificate-errors-spki-list
++    // opts.addArguments(`--ignore-certificate-errors-spki-list=${fingerprint.replace(/:/g, '')}`);
++    // opts.addArguments(`ignore-certificate-errors-spki-list=${fingerprint}`);
++
+     return opts;
+ }
+ function firefoxOpts(config) {
+diff --git a/node_modules/tachometer/lib/localhost-cert.pem b/node_modules/tachometer/lib/localhost-cert.pem
+new file mode 100644
+index 0000000..9ddf06b
+--- /dev/null
++++ b/node_modules/tachometer/lib/localhost-cert.pem
+@@ -0,0 +1,17 @@
++-----BEGIN CERTIFICATE-----
++MIICpDCCAYwCCQDWW43T/hdJAzANBgkqhkiG9w0BAQsFADAUMRIwEAYDVQQDDAls
++b2NhbGhvc3QwHhcNMjIxMjA1MDkxNTUyWhcNMjMwMTA0MDkxNTUyWjAUMRIwEAYD
++VQQDDAlsb2NhbGhvc3QwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQC/
++obmo1Kp2UNhtnOn020Jbhg8rtB0XaNS25IKpVPUQhhrgjb8Gr1jA9t16kV9/+3VR
++sD95y1xM9uYFBIIjjec3/ilce3lCmNSEJXhpeQTseXtz+R6fTNrqRba1f3xoIYiU
++fX5jBah0abWv7jykph8RXO14VEPs6qORyvse+cMvbDraglI/PpteeJnUJS5aGoX4
++md28OIhiOWYjtrm23m7L00IvCIUXDmNNJC2LtMuUTIxY2WduUtnL3PUAuSG2bimU
++VA3dzuTo2p/PKG/fLgzjEquaQqC8vlXy02zfavky2zkFnLkdOTVkdveqyfzOs7AS
++Ejc1QLCCr6Q2y4lcAuanAgMBAAEwDQYJKoZIhvcNAQELBQADggEBACZoMwQ1rulo
++nZyJ1t1OXE4SGiiY8IjYQDNjY3ITN/zfw6g4s22WW3xj2oLaNmGVjF7zf7tQj41o
++VXc3VzyTRK6NGjtmG4+HPaAXQHw6uRRqzAwNpbLMgDhqoEN6q2Xeg3TXXozmS/n0
++uPQktuIopVP8CTUDMONoMc+JWrUd9H6nhluuPiGQ4bsFY1YLMC6k7m++tv6lxHTZ
++vtHg6q1VCSVSBSZGg9h2M4xCmZ8LR0gQkDpJUwyPzI46C+79lmtFu8mQwFVvgEag
++dwuVVZ/ZOiqfoDaU7W7iB8XxfNjUyd3tB7d9c0Pip712ktiI1k7zokd4NyKpjZPj
++XPoJWNmsEyU=
++-----END CERTIFICATE-----
+diff --git a/node_modules/tachometer/lib/localhost-privkey.pem b/node_modules/tachometer/lib/localhost-privkey.pem
+new file mode 100644
+index 0000000..e740d99
+--- /dev/null
++++ b/node_modules/tachometer/lib/localhost-privkey.pem
+@@ -0,0 +1,28 @@
++-----BEGIN PRIVATE KEY-----
++MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQC/obmo1Kp2UNht
++nOn020Jbhg8rtB0XaNS25IKpVPUQhhrgjb8Gr1jA9t16kV9/+3VRsD95y1xM9uYF
++BIIjjec3/ilce3lCmNSEJXhpeQTseXtz+R6fTNrqRba1f3xoIYiUfX5jBah0abWv
++7jykph8RXO14VEPs6qORyvse+cMvbDraglI/PpteeJnUJS5aGoX4md28OIhiOWYj
++trm23m7L00IvCIUXDmNNJC2LtMuUTIxY2WduUtnL3PUAuSG2bimUVA3dzuTo2p/P
++KG/fLgzjEquaQqC8vlXy02zfavky2zkFnLkdOTVkdveqyfzOs7ASEjc1QLCCr6Q2
++y4lcAuanAgMBAAECggEAUzt6OUNNWqBYsJtT3p8RHlGG61OKwy0sHtf3jHazDl9A
++80F9s/ibEwzmO6NCmILufPGRUGQsjd07IPjJUYoD4IULD/ktPOjGfTMNLrp6kf9d
++yIxuaYBnIRPwfLqHnW7bNKuhJn9BoHZ9jJFsU5M3sUHsfrQS4Kc1LlC8a8LNrR2S
++FJsDKiGD2SxumNqtshaZsSlS8A5GuT+Zo1hIjFakDB0KqIT+uWLj9Q4rZIsu8joQ
+++dO2XhRENKm6CsCvwTxr2nY42qycgN5DfVHm0Lp9SGNROnJCgfH6brs+L0rlMyXg
+++YDC5rJNx0+APiwnHqiGPNQJ5P9DAmrS0oE290eriQKBgQD8TGC08z6Zy7xBGZI+
++WFELI4X4uYCjIsRoM0ePvBz0REqsbePpHcxhHHcIQxxQjZ9YBImmdalttSRl4kNI
++H6Znn3aXPXYuEyqBLFKbw9tltwLjrhG2zDXokyGgUxqTMs8G/BAVnfzXmiUDYwmX
++q3WMYlaE0/+MHBTS2yBAILe+9QKBgQDCcXx1uWQPHHf65aQw7JYxHWBWo9yptMiG
++TJUU4Asa3iYuHgfvkJhOng3d4LTeX6PipG/8GLMvxR1Q3uNCpIw6ll6kp/Ed0KK+
++PQ1joNsKEyKgM1D3kmcO1jRuLKreXmptokCc6yyIlbk/o8dKW1IGZDZX+havDnYB
++WC3k+gNVqwKBgHn7W45hRNULAfvfpytpe9WM2UtGNQGq35cZo/HEm6MmGYyAnP6q
++n5QcNRjTia8QqgfeOcc3gDFAsVZpLOqEEupq2OWKm8bvEU/e5BnXeg4Vi9oU4Q+m
++cDIAYPOo+mJM4HeaCxTIi+SZ7GdUzOB9z5mOOhKChT1ynkbMFy2qI+y5AoGAQ+Ld
++Yjisz33QAd/lOFORiGpKNVWWeAWvMPxR3GzwU5wV1moTuTdRhbk2/C002KKplDp3
++ApwZC2eVeaOn0p+ied4AAxrDWvZ5q1OjdhI2B0lxAF+KODV8F7j/qyubKHHsVISe
++bGrLLJChka97p+FEPQkF1CdzfgDdgFCqDVSgj2sCgYBi8EVfIz5sPaV2ZuimZ0bz
++ZzTiEZD6oN0Cbkp4aO300vksM5LE7/Fm1adiCPywsmCOwpGftCQnPN5jRRxWbH1n
++0yrN3p6FeLehC8ua3mOlPuBdM9j8xPQ97V3PYKyuSDH3OQFWNwvaa60ifDXbYs/G
++A7VAWLJxhSfMNimzVZ/Xlg==
++-----END PRIVATE KEY-----
+diff --git a/node_modules/tachometer/lib/server.js b/node_modules/tachometer/lib/server.js
+index c0ea4fc..55e5609 100644
+--- a/node_modules/tachometer/lib/server.js
++++ b/node_modules/tachometer/lib/server.js
+@@ -4,7 +4,9 @@
+  * SPDX-License-Identifier: BSD-3-Clause
+  */
+ import * as http from 'http';
++// import * as http from 'http2';
+ import * as path from 'path';
++import * as fs from 'fs';
+ import Koa from 'koa';
+ import mount from 'koa-mount';
+ import send from 'koa-send';
+@@ -34,12 +36,18 @@ export class Server {
+             const npmRoot = opts.npmInstalls.length > 0
+                 ? opts.npmInstalls[0].installDir
+                 : opts.root;
++            const log = console.log.bind(console);
+             app.use(nodeResolve({
+                 root: npmRoot,
+                 // TODO Use default logging options after issues resolved:
+                 // https://github.com/Polymer/koa-node-resolve/issues/16
+                 // https://github.com/Polymer/koa-node-resolve/issues/17
+-                logger: false,
++                logger: {
++                  debug: log,
++                  info: log,
++                  warn: log,
++                  error: log,
++                },
+             }));
+         }
+         for (const { diskPath, urlPath } of opts.mountPoints) {
+@@ -53,8 +61,19 @@ export class Server {
+         }
+         this.port = address.port;
+         this.url = `http://${host}:${this.port}`;
++        // this.url = `https://${host}:${this.port}`;
+     }
+     static start(opts) {
++        // HTTP2 in Koa: https://github.com/koajs/koa/issues/1547
++        // Generate cert:
++        // `openssl req -x509 -newkey rsa:2048 -nodes -sha256 -subj '/CN=localhost' -keyout localhost-privkey.pem -out localhost-cert.pem`
++        // const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
++        // const selfSignedCert = path.join(__dirname, 'localhost-cert.pem');
++        // const selfSignedKey = path.join(__dirname, 'localhost-privkey.pem');
++        // const server = http.createSecureServer({
++        //   cert: fs.readFileSync(selfSignedCert).toString(),
++        //   key: fs.readFileSync(selfSignedKey).toString()
++        // });
+         const server = http.createServer();
+         const ports = [...opts.ports];
+         return new Promise((resolve, reject) => {

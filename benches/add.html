@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dinero.js Add Benchmark</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module">
+      // @ts-check
+      import { USD } from '@dinero.js/currencies/dist/esm/iso4217/amendments/168/usd.js';
+      import { dinero, add } from 'dinero.js';
+
+      // Setup
+      const length = 200_000;
+      const halfLength = 100_000;
+      const prices = [];
+      for (let i = 0; i < length; i++) {
+        prices.push(dinero({ amount: i, currency: USD }));
+      }
+
+      // Test add implementation
+      let result = add(prices[0], prices[length - 1]);
+      if (result.toJSON().amount !== 199_999) {
+        console.log(result.toJSON());
+        throw new Error('FAILED');
+      }
+
+      // Run benchmark
+      performance.mark('start');
+
+      const results = [];
+      for (let i = 0; i < halfLength; i++) {
+        results.push(add(prices[i], prices[length - i - 1]));
+      }
+
+      performance.measure('runtime', 'start');
+    </script>
+  </body>
+</html>
